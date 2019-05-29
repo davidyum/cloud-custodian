@@ -113,7 +113,7 @@ class TestGlueDevEndpoints(BaseTest):
 class TestGlueTag(BaseTest):
 
     def test_glue_tags(self):
-        session_factory = self.record_flight_data("test_glue_tags")
+        session_factory = self.replay_flight_data("test_glue_tags")
         policy = {
             'name': 'glue-dev-endpoint',
             'resource': 'glue-dev-endpoint',
