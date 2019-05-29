@@ -132,6 +132,7 @@ class TestGlueTag(BaseTest):
         }
         p = self.load_policy(
             policy,
+            config={'account_id': '644160558196'},
             session_factory=session_factory)
 
         resources = p.run()
@@ -151,6 +152,7 @@ class TestGlueTag(BaseTest):
         }
         p = self.load_policy(
             policy,
+            config={'account_id': '644160558196'},
             session_factory=session_factory)
 
         resources = p.run()
