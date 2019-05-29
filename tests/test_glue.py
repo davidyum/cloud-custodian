@@ -109,6 +109,7 @@ class TestGlueDevEndpoints(BaseTest):
         dev_endpoints = client.get_dev_endpoints()["DevEndpoints"]
         self.assertFalse(dev_endpoints)
 
+
 class TestGlueTag(BaseTest):
 
     def test_glue_tags(self):
@@ -135,7 +136,7 @@ class TestGlueTag(BaseTest):
 
         self.assertEqual(len(resources), 1)
         self.assertEqual(tags.get('Tags'), {'abcd': 'xyz'})
-        self.assertEqual(resources[0]['Tags'], []) 
+        self.assertEqual(resources[0]['Tags'], [])
 
     def test_glue_untag(self):
         session_factory = self.replay_flight_data("test_glue_untag")
@@ -156,4 +157,4 @@ class TestGlueTag(BaseTest):
 
         self.assertEqual(tags.get('Tags'), {})
         self.assertEqual(len(resources), 1)
-        self.assertEqual(resources[0]['Tags'], [{'Key': 'abcd', 'Value': 'xyz'}]) 
+        self.assertEqual(resources[0]['Tags'], [{'Key': 'abcd', 'Value': 'xyz'}])

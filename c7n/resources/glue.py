@@ -25,6 +25,7 @@ from c7n.actions import BaseAction
 from c7n.filters.vpc import SubnetFilter, SecurityGroupFilter
 from c7n.tags import universal_augment, register_universal_tags
 
+
 @resources.register('glue-connection')
 class GlueConnection(QueryResourceManager):
 
@@ -99,7 +100,7 @@ class GlueDevEndpoint(QueryResourceManager):
         filter_name = None
         arn = False
         type = 'devEndpoint'
-        
+
     permissions = ('glue:GetDevEndpoints',)
 
     def augment(self, resources):
@@ -120,10 +121,10 @@ class GlueDevEndpoint(QueryResourceManager):
     def get_arns(self, resources):
         return [self.generate_arn(r['EndpointName']) for r in resources]
 
-register_universal_tags(
-    GlueDevEndpoint.filter_registry,
-    GlueDevEndpoint.action_registry)
-    
+
+register_universal_tags(GlueDevEndpoint.filter_registry, GlueDevEndpoint.action_registry)
+
+
 @GlueDevEndpoint.action_registry.register('delete')
 class DeleteDevEndpoint(BaseAction):
     """Deletes public Glue Dev Endpoints
