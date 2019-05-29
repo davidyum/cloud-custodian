@@ -103,9 +103,7 @@ class GlueDevEndpoint(QueryResourceManager):
 
     permissions = ('glue:GetDevEndpoints',)
 
-    def augment(self, resources):
-        return universal_augment(
-            self, super(GlueDevEndpoint, self).augment(resources))
+    augment = universal_augment
 
     @property
     def generate_arn(self):

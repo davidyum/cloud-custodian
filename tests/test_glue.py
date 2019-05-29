@@ -114,6 +114,11 @@ class TestGlueTag(BaseTest):
 
     def test_glue_tags(self):
         session_factory = self.replay_flight_data("test_glue_tags")
+        client = session_factory().client("glue")
+
+        tags = client.get_tags(ResourceArn='arn:aws:glue:us-east-1:644160558196:devEndpoint/test')
+        self.assertEqual(tags.get('Tags'), {})
+
         policy = {
             'name': 'test',
             'resource': 'glue-dev-endpoint',
@@ -130,13 +135,11 @@ class TestGlueTag(BaseTest):
             session_factory=session_factory)
 
         resources = p.run()
-        client = session_factory().client("glue")
         arn = p.resource_manager.generate_arn(resources[0]['EndpointName'])
+        self.assertEqual(arn, 'arn:aws:glue:us-east-1:644160558196:devEndpoint/test')
         tags = client.get_tags(ResourceArn=arn)
-
         self.assertEqual(len(resources), 1)
         self.assertEqual(tags.get('Tags'), {'abcd': 'xyz'})
-        self.assertEqual(resources[0]['Tags'], [])
 
     def test_glue_untag(self):
         session_factory = self.replay_flight_data("test_glue_untag")
@@ -155,6 +158,6 @@ class TestGlueTag(BaseTest):
         arn = p.resource_manager.generate_arn(resources[0]['EndpointName'])
         tags = client.get_tags(ResourceArn=arn)
 
+        self.assertEqual(arn, 'arn:aws:glue:us-east-1:644160558196:devEndpoint/test')
         self.assertEqual(tags.get('Tags'), {})
         self.assertEqual(len(resources), 1)
-        self.assertEqual(resources[0]['Tags'], [{'Key': 'abcd', 'Value': 'xyz'}])
