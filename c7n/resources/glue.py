@@ -191,7 +191,9 @@ class GlueJob(QueryResourceManager):
     def get_arns(self, resources):
         return [self.generate_arn(r['Name']) for r in resources]
 
+
 register_universal_tags(GlueJob.filter_registry, GlueJob.action_registry)
+
 
 @GlueJob.action_registry.register('delete')
 class DeleteJob(BaseAction):

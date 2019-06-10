@@ -216,6 +216,7 @@ class TestGlueTag(BaseTest):
         self.assertEqual(tags.get('Tags'), {})
         self.assertEqual(len(resources), 1)
 
+
 class TestGlueJobs(BaseTest):
 
     def test_job_query(self):
