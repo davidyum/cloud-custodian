@@ -219,16 +219,6 @@ class TestGlueTag(BaseTest):
 
 class TestGlueJobs(BaseTest):
 
-    def test_job_query(self):
-        session_factory = self.replay_flight_data("test_glue_query_resources")
-        p = self.load_policy(
-            {"name": "list-glue-jobs", "resource": "glue-job"},
-            session_factory=session_factory,
-        )
-        resources = p.run()
-
-        self.assertEqual(len(resources), 1)
-
     def test_jobs_delete(self):
         session_factory = self.replay_flight_data("test_glue_job_delete")
         p = self.load_policy(

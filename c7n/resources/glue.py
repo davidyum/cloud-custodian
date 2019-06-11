@@ -206,6 +206,5 @@ class DeleteJob(BaseAction):
         for r in resources:
             try:
                 client.delete_job(JobName=r['Name'])
-            except ClientError as e:
-                if e.response['Error']['Code'] != 'EntityNotFoundException':
+            except client.exceptions.EntityNotFoundException:
                     raise
