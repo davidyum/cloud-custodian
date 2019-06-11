@@ -8,7 +8,7 @@
                 "Targets": {
                     "S3Targets": [
                         {
-                            "Path": "s3://c7n-codebuild",
+                            "Path": "s3://c7n-s3-orgid",
                             "Exclusions": []
                         }
                     ],
@@ -29,8 +29,8 @@
                     "month": 6,
                     "day": 11,
                     "hour": 12,
-                    "minute": 45,
-                    "second": 15,
+                    "minute": 53,
+                    "second": 10,
                     "microsecond": 0
                 },
                 "LastUpdated": {
@@ -39,22 +39,22 @@
                     "month": 6,
                     "day": 11,
                     "hour": 12,
-                    "minute": 45,
-                    "second": 15,
+                    "minute": 53,
+                    "second": 10,
                     "microsecond": 0
                 },
                 "Version": 1
             }
         ],
         "ResponseMetadata": {
-            "RequestId": "518700b4-8c68-11e9-bb91-df71d6414f52",
+            "RequestId": "b3650ce9-8c7f-11e9-bce1-dd4083a88d28",
             "HTTPStatusCode": 200,
             "HTTPHeaders": {
-                "date": "Tue, 11 Jun 2019 16:45:28 GMT",
+                "date": "Tue, 11 Jun 2019 19:32:51 GMT",
                 "content-type": "application/x-amz-json-1.1",
-                "content-length": "430",
+                "content-length": "427",
                 "connection": "keep-alive",
-                "x-amzn-requestid": "518700b4-8c68-11e9-bb91-df71d6414f52"
+                "x-amzn-requestid": "b3650ce9-8c7f-11e9-bce1-dd4083a88d28"
             },
             "RetryAttempts": 0
         }

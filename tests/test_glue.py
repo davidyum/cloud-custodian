@@ -168,12 +168,10 @@ class TestGlueTag(BaseTest):
         session_factory = self.replay_flight_data("test_glue_job_tags")
         client = session_factory().client("glue")
 
-        tags = client.get_tags(ResourceArn='arn:aws:glue:us-east-1:644160558196:job/test')
-        self.assertEqual(tags.get('Tags'), {})
-
         policy = {
             'name': 'test',
             'resource': 'glue-job',
+            'filters': [{'tag:abcd': 'absent'}],
             'actions': [
                 {
                     'type': 'tag',
@@ -196,10 +194,10 @@ class TestGlueTag(BaseTest):
 
     def test_glue_job_untag(self):
         session_factory = self.replay_flight_data("test_glue_job_untag")
-
         policy = {
             'name': 'test',
             'resource': 'glue-job',
+            'filters': [{'tag:abcd': 'present'}],
             'actions': [{'type': 'remove-tag', 'tags': ['abcd']}]
         }
         p = self.load_policy(
@@ -220,12 +218,10 @@ class TestGlueTag(BaseTest):
         session_factory = self.replay_flight_data("test_crawler_tags")
         client = session_factory().client("glue")
 
-        tags = client.get_tags(ResourceArn='arn:aws:glue:us-east-1:644160558196:crawler/test')
-        self.assertEqual(tags.get('Tags'), {})
-
         policy = {
             'name': 'test',
             'resource': 'glue-crawler',
+            'filters': [{'tag:abcd': 'absent'}],
             'actions': [
                 {
                     'type': 'tag',
@@ -252,6 +248,7 @@ class TestGlueTag(BaseTest):
         policy = {
             'name': 'test',
             'resource': 'glue-crawler',
+            'filters': [{'tag:abcd': 'present'}],
             'actions': [{'type': 'remove-tag', 'tags': ['abcd']}]
         }
         p = self.load_policy(
@@ -292,7 +289,7 @@ class TestGlueJobs(BaseTest):
 class TestGlueCrawlers(BaseTest):
 
     def test_crawlers_delete(self):
-        session_factory = self.replay_flight_data("test_glue_crawler_delete")
+        session_factory = self.record_flight_data("test_glue_crawler_delete")
         p = self.load_policy(
             {
                 "name": "glue-crawler-delete",

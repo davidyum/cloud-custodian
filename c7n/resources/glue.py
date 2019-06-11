@@ -173,9 +173,12 @@ class GlueJob(QueryResourceManager):
         date = 'CreatedOn'
         dimension = None
         filter_name = None
+        type = 'job'
         arn = False
 
     permissions = ('glue:GetJobs',)
+
+    augment = universal_augment
 
     @property
     def generate_arn(self):
@@ -207,7 +210,7 @@ class DeleteJob(BaseAction):
             try:
                 client.delete_job(JobName=r['Name'])
             except client.exceptions.EntityNotFoundException:
-                raise
+                continue
 
 
 @resources.register('glue-crawler')
@@ -220,10 +223,13 @@ class GlueCrawler(QueryResourceManager):
         id = name = 'Name'
         date = 'CreatedOn'
         dimension = None
-        filter_name = None
+        filter_name = None,
+        type = 'crawler'
         arn = False
 
     permissions = ('glue:GetCrawlers',)
+
+    augment = universal_augment
 
     @property
     def generate_arn(self):
@@ -255,4 +261,4 @@ class DeleteCrawler(BaseAction):
             try:
                 client.delete_crawler(Name=r['Name'])
             except client.exceptions.EntityNotFoundException:
-                raise
+                continue
