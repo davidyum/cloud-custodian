@@ -289,7 +289,7 @@ class TestGlueJobs(BaseTest):
 class TestGlueCrawlers(BaseTest):
 
     def test_crawlers_delete(self):
-        session_factory = self.record_flight_data("test_glue_crawler_delete")
+        session_factory = self.replay_flight_data("test_glue_crawler_delete")
         p = self.load_policy(
             {
                 "name": "glue-crawler-delete",
