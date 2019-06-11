@@ -208,3 +208,51 @@ class DeleteJob(BaseAction):
                 client.delete_job(JobName=r['Name'])
             except client.exceptions.EntityNotFoundException:
                 raise
+
+
+@resources.register('glue-crawler')
+class GlueCrawler(QueryResourceManager):
+
+    class resource_type(object):
+        service = 'glue'
+        enum_spec = ('get_crawlers', 'Crawlers', None)
+        detail_spec = None
+        id = name = 'Name'
+        date = 'CreatedOn'
+        dimension = None
+        filter_name = None
+        arn = False
+
+    permissions = ('glue:GetCrawlers',)
+
+    @property
+    def generate_arn(self):
+        self._generate_arn = functools.partial(
+            generate_arn,
+            'glue',
+            region=self.config.region,
+            account_id=self.config.account_id,
+            resource_type='crawler',
+            separator='/')
+        return self._generate_arn
+
+    def get_arns(self, resources):
+        return [self.generate_arn(r['Name']) for r in resources]
+
+
+register_universal_tags(GlueCrawler.filter_registry, GlueCrawler.action_registry)
+
+
+@GlueCrawler.action_registry.register('delete')
+class DeleteCrawler(BaseAction):
+
+    schema = type_schema('delete')
+    permissions = ('glue:DeleteCrawler',)
+
+    def process(self, resources):
+        client = local_session(self.manager.session_factory).client('glue')
+        for r in resources:
+            try:
+                client.delete_crawler(Name=r['Name'])
+            except client.exceptions.EntityNotFoundException:
+                raise
