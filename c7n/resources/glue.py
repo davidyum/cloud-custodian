@@ -207,4 +207,4 @@ class DeleteJob(BaseAction):
             try:
                 client.delete_job(JobName=r['Name'])
             except client.exceptions.EntityNotFoundException:
-                    raise
+                raise
