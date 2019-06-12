@@ -258,7 +258,8 @@ class DeleteCrawler(BaseAction):
     def process(self, resources):
         client = local_session(self.manager.session_factory).client('glue')
         for r in resources:
-            try:
-                client.delete_crawler(Name=r['Name'])
-            except client.exceptions.EntityNotFoundException:
-                continue
+            if r.get('State') not in ['RUNNING', 'STOPPING']:
+                try:
+                    client.delete_crawler(Name=r['Name'])
+                except client.exceptions.EntityNotFoundException:
+                    continue

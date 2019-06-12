@@ -8,7 +8,7 @@
                 "Targets": {
                     "S3Targets": [
                         {
-                            "Path": "s3://c7n-s3-orgid",
+                            "Path": "s3://c7n-codebuild",
                             "Exclusions": []
                         }
                     ],
@@ -27,34 +27,51 @@
                     "__class__": "datetime",
                     "year": 2019,
                     "month": 6,
-                    "day": 11,
-                    "hour": 12,
-                    "minute": 53,
-                    "second": 10,
+                    "day": 12,
+                    "hour": 13,
+                    "minute": 9,
+                    "second": 22,
                     "microsecond": 0
                 },
                 "LastUpdated": {
                     "__class__": "datetime",
                     "year": 2019,
                     "month": 6,
-                    "day": 11,
-                    "hour": 12,
-                    "minute": 53,
-                    "second": 10,
+                    "day": 12,
+                    "hour": 13,
+                    "minute": 9,
+                    "second": 22,
                     "microsecond": 0
+                },
+                "LastCrawl": {
+                    "Status": "FAILED",
+                    "ErrorMessage": "User: arn:aws:sts::644160558196:assumed-role/c7n-glue-test/AWS-Crawler is not authorized to perform: logs:PutLogEvents on resource: arn:aws:logs:us-east-1:644160558196:log-group:/aws-glue/crawlers:log-stream:test (Service: AWSLogs; Status Code: 400; Error Code: AccessDeniedException; Request ID: 1c4d9ec6-8d36-11e9-87da-3d073df0cd35). For more information, see Setting up IAM Permissions in the Developer Guide (http://docs.aws.amazon.com/glue/latest/dg/getting-started-access.html).",
+                    "LogGroup": "/aws-glue/crawlers",
+                    "LogStream": "test",
+                    "MessagePrefix": "57c47d32-09da-4923-a98b-ca5be47796aa",
+                    "StartTime": {
+                        "__class__": "datetime",
+                        "year": 2019,
+                        "month": 6,
+                        "day": 12,
+                        "hour": 13,
+                        "minute": 16,
+                        "second": 16,
+                        "microsecond": 0
+                    }
                 },
                 "Version": 1
             }
         ],
         "ResponseMetadata": {
-            "RequestId": "b3650ce9-8c7f-11e9-bce1-dd4083a88d28",
+            "RequestId": "3e9bd147-8d36-11e9-8fda-a12af6d3da3c",
             "HTTPStatusCode": 200,
             "HTTPHeaders": {
-                "date": "Tue, 11 Jun 2019 19:32:51 GMT",
+                "date": "Wed, 12 Jun 2019 17:19:33 GMT",
                 "content-type": "application/x-amz-json-1.1",
-                "content-length": "427",
+                "content-length": "1096",
                 "connection": "keep-alive",
-                "x-amzn-requestid": "b3650ce9-8c7f-11e9-bce1-dd4083a88d28"
+                "x-amzn-requestid": "3e9bd147-8d36-11e9-8fda-a12af6d3da3c"
             },
             "RetryAttempts": 0
         }
