@@ -760,3 +760,15 @@ class ValueRegex(object):
         if capture is None:  # regex didn't capture anything
             return None
         return capture.group(1)
+
+
+class StateTransitionFilter(Filter):
+    valid_origin_states = ()
+
+    def filter_resource_state(self, resources, event=None):
+        state_key = self.manager.get_model().state_key
+        states = self.valid_origin_states
+
+        results = [r for r in resources if r[state_key] in states]
+
+        return results
