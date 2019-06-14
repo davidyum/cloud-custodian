@@ -250,8 +250,6 @@ class GlueCrawler(QueryResourceManager):
 
 register_universal_tags(GlueCrawler.filter_registry, GlueCrawler.action_registry)
 
-valid_origin_states = ('READY', 'FAILED')
-
 
 @GlueCrawler.action_registry.register('delete')
 class DeleteCrawler(BaseAction, StateTransitionFilter):

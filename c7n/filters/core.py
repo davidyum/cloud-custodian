@@ -768,7 +768,9 @@ class StateTransitionFilter(Filter):
     def filter_resource_state(self, resources, event=None):
         state_key = self.manager.get_model().state_key
         states = self.valid_origin_states
-
+        orig_length = len(resources)
         results = [r for r in resources if r[state_key] in states]
+        self.log.info("%s %d of %d resources" % (
+            self.__class__.__name__, len(results), orig_length))
 
         return results
