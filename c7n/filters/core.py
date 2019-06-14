@@ -770,7 +770,7 @@ class StateTransitionFilter(Filter):
         states = self.valid_origin_states
         orig_length = len(resources)
         results = [r for r in resources if r[state_key] in states]
-        self.log.info("%s %d of %d resources" % (
-            self.__class__.__name__, len(results), orig_length))
+        self.log.info("filtered %d of %d %s resources with  %s states" % (
+            len(results), orig_length, self.__class__.__name__, states))
 
         return results
