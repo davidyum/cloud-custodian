@@ -303,4 +303,4 @@ class TestGlueCrawlers(BaseTest):
         self.assertEqual(len(resources), 1)
         client = session_factory().client("glue")
         crawlers = client.get_crawlers()["Crawlers"]
-        self.assertFalse(crawlers)
+        self.assertFalse("test" in [c.get("Name") for c in crawlers])
