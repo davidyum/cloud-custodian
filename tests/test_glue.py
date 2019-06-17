@@ -136,9 +136,9 @@ class TestGlueTag(BaseTest):
             session_factory=session_factory)
 
         resources = p.run()
-        arn = p.resource_manager.generate_arn(resources[0]['EndpointName'])
-        self.assertEqual(arn, 'arn:aws:glue:us-east-1:644160558196:devEndpoint/test')
-        tags = client.get_tags(ResourceArn=arn)
+        arn = p.resource_manager.get_arns(resources)
+        self.assertEqual(arn[0], 'arn:aws:glue:us-east-1:644160558196:devEndpoint/test')
+        tags = client.get_tags(ResourceArn=arn[0])
         self.assertEqual(len(resources), 1)
         self.assertEqual(tags.get('Tags'), {'abcd': 'xyz'})
 
@@ -157,10 +157,10 @@ class TestGlueTag(BaseTest):
 
         resources = p.run()
         client = session_factory().client("glue")
-        arn = p.resource_manager.generate_arn(resources[0]['EndpointName'])
-        tags = client.get_tags(ResourceArn=arn)
+        arn = p.resource_manager.get_arns(resources)
+        tags = client.get_tags(ResourceArn=arn[0])
 
-        self.assertEqual(arn, 'arn:aws:glue:us-east-1:644160558196:devEndpoint/test')
+        self.assertEqual(arn[0], 'arn:aws:glue:us-east-1:644160558196:devEndpoint/test')
         self.assertEqual(tags.get('Tags'), {})
         self.assertEqual(len(resources), 1)
 
@@ -186,9 +186,9 @@ class TestGlueTag(BaseTest):
             session_factory=session_factory)
 
         resources = p.run()
-        arn = p.resource_manager.generate_arn(resources[0]['Name'])
-        self.assertEqual(arn, 'arn:aws:glue:us-east-1:644160558196:job/test')
-        tags = client.get_tags(ResourceArn=arn)
+        arn = p.resource_manager.get_arns(resources)
+        self.assertEqual(arn[0], 'arn:aws:glue:us-east-1:644160558196:job/test')
+        tags = client.get_tags(ResourceArn=arn[0])
         self.assertEqual(len(resources), 1)
         self.assertEqual(tags.get('Tags'), {'abcd': 'xyz'})
 
@@ -207,10 +207,10 @@ class TestGlueTag(BaseTest):
 
         resources = p.run()
         client = session_factory().client("glue")
-        arn = p.resource_manager.generate_arn(resources[0]['Name'])
-        tags = client.get_tags(ResourceArn=arn)
+        arn = p.resource_manager.get_arns(resources)
+        tags = client.get_tags(ResourceArn=arn[0])
 
-        self.assertEqual(arn, 'arn:aws:glue:us-east-1:644160558196:job/test')
+        self.assertEqual(arn[0], 'arn:aws:glue:us-east-1:644160558196:job/test')
         self.assertEqual(tags.get('Tags'), {})
         self.assertEqual(len(resources), 1)
 
@@ -236,9 +236,9 @@ class TestGlueTag(BaseTest):
             session_factory=session_factory)
 
         resources = p.run()
-        arn = p.resource_manager.generate_arn(resources[0]['Name'])
-        self.assertEqual(arn, 'arn:aws:glue:us-east-1:644160558196:crawler/test')
-        tags = client.get_tags(ResourceArn=arn)
+        arn = p.resource_manager.get_arns(resources)
+        self.assertEqual(arn[0], 'arn:aws:glue:us-east-1:644160558196:crawler/test')
+        tags = client.get_tags(ResourceArn=arn[0])
         self.assertEqual(len(resources), 1)
         self.assertEqual(tags.get('Tags'), {'abcd': 'xyz'})
 
@@ -258,10 +258,10 @@ class TestGlueTag(BaseTest):
 
         resources = p.run()
         client = session_factory().client("glue")
-        arn = p.resource_manager.generate_arn(resources[0]['Name'])
-        tags = client.get_tags(ResourceArn=arn)
+        arn = p.resource_manager.get_arns(resources)
+        tags = client.get_tags(ResourceArn=arn[0])
 
-        self.assertEqual(arn, 'arn:aws:glue:us-east-1:644160558196:crawler/test')
+        self.assertEqual(arn, ['arn:aws:glue:us-east-1:644160558196:crawler/test'])
         self.assertEqual(tags.get('Tags'), {})
         self.assertEqual(len(resources), 1)
 
