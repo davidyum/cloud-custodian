@@ -1,0 +1,71 @@
+{
+    "status_code": 200,
+    "data": {
+        "TableList": [
+            {
+                "Name": "test",
+                "DatabaseName": "test",
+                "CreateTime": {
+                    "__class__": "datetime",
+                    "year": 2019,
+                    "month": 6,
+                    "day": 21,
+                    "hour": 14,
+                    "minute": 48,
+                    "second": 25,
+                    "microsecond": 0
+                },
+                "UpdateTime": {
+                    "__class__": "datetime",
+                    "year": 2019,
+                    "month": 6,
+                    "day": 21,
+                    "hour": 14,
+                    "minute": 48,
+                    "second": 25,
+                    "microsecond": 0
+                },
+                "Retention": 0,
+                "StorageDescriptor": {
+                    "Columns": [
+                        {
+                            "Name": "test",
+                            "Type": "string"
+                        }
+                    ],
+                    "Location": "s3://c7n-codebuild/",
+                    "InputFormat": "org.apache.hadoop.mapred.TextInputFormat",
+                    "OutputFormat": "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+                    "Compressed": false,
+                    "NumberOfBuckets": 0,
+                    "SerdeInfo": {
+                        "SerializationLibrary": "org.openx.data.jsonserde.JsonSerDe",
+                        "Parameters": {
+                            "paths": "test"
+                        }
+                    },
+                    "SortColumns": [],
+                    "StoredAsSubDirectories": false
+                },
+                "PartitionKeys": [],
+                "TableType": "EXTERNAL_TABLE",
+                "Parameters": {
+                    "classification": "json"
+                },
+                "CreatedBy": "arn:aws:iam::644160558196:user/david.yun@capitalone.com"
+            }
+        ],
+        "ResponseMetadata": {
+            "RequestId": "3d2cae4b-9455-11e9-a30b-11666da14c1c",
+            "HTTPStatusCode": 200,
+            "HTTPHeaders": {
+                "date": "Fri, 21 Jun 2019 18:49:03 GMT",
+                "content-type": "application/x-amz-json-1.1",
+                "content-length": "739",
+                "connection": "keep-alive",
+                "x-amzn-requestid": "3d2cae4b-9455-11e9-a30b-11666da14c1c"
+            },
+            "RetryAttempts": 0
+        }
+    }
+}
