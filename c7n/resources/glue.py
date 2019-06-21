@@ -24,6 +24,7 @@ from c7n.utils import local_session, chunks, type_schema, generate_arn
 from c7n.actions import BaseAction
 from c7n.filters.vpc import SubnetFilter, SecurityGroupFilter
 from c7n.tags import universal_augment, register_universal_tags
+from c7n import query
 
 
 @resources.register('glue-connection')
@@ -256,3 +257,83 @@ class DeleteCrawler(BaseAction):
                 client.delete_crawler(Name=r['Name'])
             except client.exceptions.EntityNotFoundException:
                 raise
+
+
+@resources.register('glue-database')
+class GlueDatabase(QueryResourceManager):
+
+    class resource_type(object):
+        service = 'glue'
+        enum_spec = ('get_databases', 'DatabaseList', None)
+        detail_spec = None
+        id = name = 'Name'
+        date = 'CreatedOn'
+        dimension = None
+        filter_name = None,
+        type = 'database'
+        state_key = 'State'
+
+    permissions = ('glue:Getdatabases',)
+
+
+@GlueDatabase.action_registry.register('delete')
+class DeleteDatabase(BaseAction):
+
+    schema = type_schema('delete')
+    permissions = ('glue:DeleteDatabase',)
+
+    def process(self, resources):
+        client = local_session(self.manager.session_factory).client('glue')
+        for r in resources:
+            try:
+                client.delete_database(Name=r['Name'])
+            except client.exceptions.EntityNotFoundException:
+                continue
+
+
+@resources.register('glue-table')
+class GlueTable(query.ChildResourceManager):
+
+    child_source = 'describe-table'
+    class resource_type(object):
+        service = 'glue'
+        parent_spec = ('glue-database', 'DatabaseName', None)
+        enum_spec = ('get_tables', 'TableList', None)
+        detail_spec = None
+        name = 'Name'
+        date = 'CreatedOn'
+        dimension = None
+        filter_name = None,
+        type = 'table'
+        state_key = 'State'
+
+    permissions = ('glue:Gettables',)
+
+
+@query.sources.register('describe-table')
+class DescribeTable(query.ChildDescribeSource):
+
+    def get_query(self):
+        query = super(DescribeTable, self).get_query()
+        query.capture_parent_id = True
+        return query
+
+    def augment(self, resources):
+        for parent_id, r in resources:
+            r['DatabaseName'] = parent_id
+        return [r]
+
+
+@GlueTable.action_registry.register('delete')
+class DeleteTable(BaseAction):
+
+    schema = type_schema('delete')
+    permissions = ('glue:DeleteTable',)
+
+    def process(self, resources):
+        client = local_session(self.manager.session_factory).client('glue')
+        for r in resources:
+            try:
+                client.delete_table(DatabaseName=r['DatabaseName'], Name=r['Name'])
+            except client.exceptions.EntityNotFoundException:
+                continue
