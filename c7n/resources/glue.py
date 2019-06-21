@@ -319,9 +319,11 @@ class DescribeTable(query.ChildDescribeSource):
         return query
 
     def augment(self, resources):
+        result = []
         for parent_id, r in resources:
             r['DatabaseName'] = parent_id
-        return [r]
+            result.append(r)
+        return result
 
 
 @GlueTable.action_registry.register('delete')
