@@ -295,6 +295,7 @@ class DeleteDatabase(BaseAction):
 class GlueTable(query.ChildResourceManager):
 
     child_source = 'describe-table'
+
     class resource_type(object):
         service = 'glue'
         parent_spec = ('glue-database', 'DatabaseName', None)
