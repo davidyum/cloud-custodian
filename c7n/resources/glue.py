@@ -23,7 +23,6 @@ from c7n.actions import BaseAction
 from c7n.filters.vpc import SubnetFilter, SecurityGroupFilter
 from c7n.tags import universal_augment, register_universal_tags
 from c7n.filters import StateTransitionFilter
-from c7n.filters import StateTransitionFilter
 from c7n import query
 
 
