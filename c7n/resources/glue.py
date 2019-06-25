@@ -211,19 +211,13 @@ class DeleteCrawler(BaseAction, StateTransitionFilter):
 @resources.register('glue-database')
 class GlueDatabase(QueryResourceManager):
 
-    class resource_type(object):
+    class resource_type(TypeInfo):
         service = 'glue'
         enum_spec = ('get_databases', 'DatabaseList', None)
-        detail_spec = None
         id = name = 'Name'
         date = 'CreatedOn'
-        dimension = None
-        filter_name = None,
-        type = 'database'
+        arn_type = 'database'
         state_key = 'State'
-        arn = None
-
-    permissions = ('glue:Getdatabases',)
 
 
 @GlueDatabase.action_registry.register('delete')
@@ -246,20 +240,13 @@ class GlueTable(query.ChildResourceManager):
 
     child_source = 'describe-table'
 
-    class resource_type(object):
+    class resource_type(TypeInfo):
         service = 'glue'
         parent_spec = ('glue-database', 'DatabaseName', None)
         enum_spec = ('get_tables', 'TableList', None)
-        detail_spec = None
         name = 'Name'
         date = 'CreatedOn'
-        dimension = None
-        filter_name = None,
-        type = 'table'
-        state_key = 'State'
-        arn = True
-
-    permissions = ('glue:Gettables',)
+        arn_type = 'table'
 
 
 @query.sources.register('describe-table')
