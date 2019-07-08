@@ -1317,17 +1317,18 @@ class GlueEncryptionEnabled(Filter):
         }
     }
     def process(self, resources, event=None):
+
         client = local_session(self.manager.session_factory).client('glue')
 
         try:
-            encryption_setting = client.get_data_catalog_encryption_settings().get('DataCatalogEncryptionSettings')
-            print(encryption_setting['EncryptionAtRest']['CatalogEncryptionMode'])
-            
+            encryption_setting = client.get_data_catalog_encryption_settings().get(
+                'DataCatalogEncryptionSettings')
+
         except ClientError as e:
             if e.response['Error']['Code'] != 'EntityNotFoundException':
                 raise
 
-        if encryption_setting['EncryptionAtRest']['CatalogEncryptionMode'] != 'DISABLED':
+        if encryption_setting['EncryptionAtRest'].get('CatalogEncryptionMode') != 'DISABLED':
             resources[0]['c7n:GlueEncryption'] = encryption_setting
             return resources
 
