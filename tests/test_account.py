@@ -753,6 +753,20 @@ class AccountTests(BaseTest):
         )
         self.assertEqual(len(p.run()), 1)
 
+    def test_glue_encryption_filter(self):
+        session_factory = self.record_flight_data("test_account_glue_encyption_filter")
+        p = self.load_policy(
+            {
+                "name": "glue-account-encryption",
+                "resource": "account",
+                "filters": ["glue-encryption-enabled"],
+            },
+            session_factory=session_factory,
+        )
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+
 
 class AccountDataEvents(BaseTest):
 
