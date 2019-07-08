@@ -1316,6 +1316,9 @@ class GlueEncryptionEnabled(Filter):
             }
         }
     }
+
+    permissions = ('glue:GetDataCatalogEncryptionSettings',)
+
     def process(self, resources, event=None):
 
         client = local_session(self.manager.session_factory).client('glue')
