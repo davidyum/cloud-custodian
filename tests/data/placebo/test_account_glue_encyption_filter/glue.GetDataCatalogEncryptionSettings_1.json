@@ -1,0 +1,26 @@
+{
+    "status_code": 200,
+    "data": {
+        "DataCatalogEncryptionSettings": {
+            "EncryptionAtRest": {
+                "CatalogEncryptionMode": "SSE-KMS",
+                "SseAwsKmsKeyId": "arn:aws:kms:us-east-1:644160558196:key/d12e743c-a297-447c-9c13-8f3c08f4161c"
+            },
+            "ConnectionPasswordEncryption": {
+                "ReturnConnectionPasswordEncrypted": false
+            }
+        },
+        "ResponseMetadata": {
+            "RequestId": "003d3d15-a1b0-11e9-b360-e54e6a60042c",
+            "HTTPStatusCode": 200,
+            "HTTPHeaders": {
+                "date": "Mon, 08 Jul 2019 18:41:30 GMT",
+                "content-type": "application/x-amz-json-1.1",
+                "content-length": "260",
+                "connection": "keep-alive",
+                "x-amzn-requestid": "003d3d15-a1b0-11e9-b360-e54e6a60042c"
+            },
+            "RetryAttempts": 0
+        }
+    }
+}
