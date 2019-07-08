@@ -1279,3 +1279,56 @@ class SetS3PublicBlock(BaseAction):
             client.put_public_access_block(
                 AccountId=r['account_id'],
                 PublicAccessBlockConfiguration=config)
+
+
+@filters.register('glue-encryption-enabled')
+class GlueEncryptionEnabled(Filter):
+    """Check if glue SSE-KMS encryption is enabled on the aws account. """
+
+    schema = {
+        'type': 'object',
+        'additionalProperties': False,
+        'properties': {
+            'type': {'enum': ['glue-encryption-enabled']},
+            'CatalogId': {'type': 'string'},
+            'DataCatalogEncryptionSettings': {
+                'type': 'object',
+                'additionalProperties': False,
+                'properties': {
+                    'EncryptionAtRest': {
+                        'type': 'object',
+                        'additionalProperties': False,
+                        'properties': {
+                            'CatalogEncryptionMode': {'type': 'string',
+                            'enum': ['DISABLED', 'SSE-KMS']},
+                            'SseAwsKmsKeyId': {'type': 'string'}
+                        }
+                    },
+                    'ConnectionPasswordEncryption': {
+                        'type': 'object',
+                        'additionalProperties': False,
+                        'properties': {
+                            'ReturnConnectionPasswordEncrypted': {'type': 'boolean'},
+                            'AwsKmsKeyId': {'type': 'string'}
+                        }
+                    }
+                }
+            }
+        }
+    }
+    def process(self, resources, event=None):
+        client = local_session(self.manager.session_factory).client('glue')
+
+        try:
+            encryption_setting = client.get_data_catalog_encryption_settings().get('DataCatalogEncryptionSettings')
+            print(encryption_setting['EncryptionAtRest']['CatalogEncryptionMode'])
+            
+        except ClientError as e:
+            if e.response['Error']['Code'] != 'EntityNotFoundException':
+                raise
+
+        if encryption_setting['EncryptionAtRest']['CatalogEncryptionMode'] != 'DISABLED':
+            resources[0]['c7n:GlueEncryption'] = encryption_setting
+            return resources
+
+        return []
