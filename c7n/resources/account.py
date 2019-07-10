@@ -1281,58 +1281,40 @@ class SetS3PublicBlock(BaseAction):
                 PublicAccessBlockConfiguration=config)
 
 
-@filters.register('glue-encryption-enabled')
-class GlueEncryptionEnabled(Filter):
-    """Check if glue SSE-KMS encryption is enabled on the aws account. """
+@filters.register('glue-security-config')
+class GlueEncryptionEnabled(MultiAttrFilter):
+    """Check if security configuration is enabled on the aws account. """
 
     schema = {
         'type': 'object',
         'additionalProperties': False,
         'properties': {
-            'type': {'enum': ['glue-encryption-enabled']},
-            'CatalogId': {'type': 'string'},
-            'DataCatalogEncryptionSettings': {
-                'type': 'object',
-                'additionalProperties': False,
-                'properties': {
-                    'EncryptionAtRest': {
-                        'type': 'object',
-                        'additionalProperties': False,
-                        'properties': {
-                            'CatalogEncryptionMode': {'type': 'string',
-                            'enum': ['DISABLED', 'SSE-KMS']},
-                            'SseAwsKmsKeyId': {'type': 'string'}
-                        }
-                    },
-                    'ConnectionPasswordEncryption': {
-                        'type': 'object',
-                        'additionalProperties': False,
-                        'properties': {
-                            'ReturnConnectionPasswordEncrypted': {'type': 'boolean'},
-                            'AwsKmsKeyId': {'type': 'string'}
-                        }
-                    }
-                }
-            }
-        }
+            'type': {'enum': ['glue-security-config']},
+            'match-operator': {'enum': ['or', 'and']}},
+        'patternProperties': {
+            'EncryptionAtRest': {'type': 'object'},
+            'ConnectionPasswordEncryption': {'type': 'object'}},
     }
 
+    annotation = "c7n:glue-security-config"
     permissions = ('glue:GetDataCatalogEncryptionSettings',)
 
-    def process(self, resources, event=None):
+    def validate(self):
+        attrs = set()
+        for key in self.data:
+            if key.startswith('EncryptionAtRest') or key.startswith('ConnectionPasswordEncryption'):
+                attrs.add(key)
+        self.multi_attrs = attrs
+        return super(GlueEncryptionEnabled, self).validate()
+
+    def get_target(self, resource):
+        if self.annotation in resource:
+            return resource[self.annotation]
 
         client = local_session(self.manager.session_factory).client('glue')
+        encryption_setting = client.get_data_catalog_encryption_settings().get(
+            'DataCatalogEncryptionSettings')
 
-        try:
-            encryption_setting = client.get_data_catalog_encryption_settings().get(
-                'DataCatalogEncryptionSettings')
+        resource[self.annotation] = encryption_setting
 
-        except ClientError as e:
-            if e.response['Error']['Code'] != 'EntityNotFoundException':
-                raise
-
-        if encryption_setting['EncryptionAtRest'].get('CatalogEncryptionMode') != 'DISABLED':
-            resources[0]['c7n:GlueEncryption'] = encryption_setting
-            return resources
-
-        return []
+        return resource[self.annotation]

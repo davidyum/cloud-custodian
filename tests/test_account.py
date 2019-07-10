@@ -757,12 +757,18 @@ class AccountTests(BaseTest):
         session_factory = self.replay_flight_data("test_account_glue_encyption_filter")
         p = self.load_policy(
             {
-                "name": "glue-account-encryption",
+                "name": "glue-security-config",
                 "resource": "account",
-                "filters": ["glue-encryption-enabled"],
-            },
+                'filters': [{
+                    'type': 'glue-security-config',
+                    'EncryptionAtRest.CatalogEncryptionMode': 'SSE-KMS'},
+                    {
+                    'type': 'glue-security-config',
+                    'ConnectionPasswordEncryption.ReturnConnectionPasswordEncrypted': False
+                }]},
             session_factory=session_factory,
         )
+
         resources = p.run()
 
         self.assertEqual(len(resources), 1)
