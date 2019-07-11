@@ -1292,8 +1292,8 @@ class GlueEncryptionEnabled(MultiAttrFilter):
             'type': {'enum': ['glue-security-config']},
             'match-operator': {'enum': ['or', 'and']}},
         'patternProperties': {
-            'EncryptionAtRest': {'type': 'object'},
-            'ConnectionPasswordEncryption': {'type': 'object'}},
+            'EncryptionAtRest': {'oneOf': [{'type': 'object'}, {'type': 'string'}]},
+            'ConnectionPasswordEncryption': {'oneOf': [{'type': 'object'}, {'type': 'string'}]}},
     }
 
     annotation = "c7n:glue-security-config"
