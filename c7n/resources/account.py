@@ -1287,7 +1287,6 @@ class GlueEncryptionEnabled(MultiAttrFilter):
 
     schema = {
         'type': 'object',
-        'additionalProperties': False,
         'properties': {
             'type': {'enum': ['glue-security-config']},
             'match-operator': {'enum': ['or', 'and']},
