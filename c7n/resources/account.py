@@ -1292,7 +1292,6 @@ class GlueEncryptionEnabled(MultiAttrFilter):
             'type': {'enum': ['glue-security-config']},
             'CatalogEncryptionMode': {'type': 'string'},
             'ReturnConnectionPasswordEncrypted': {'type': 'boolean'}}}
-    
 
     annotation = "c7n:glue-security-config"
     permissions = ('glue:GetDataCatalogEncryptionSettings',)
@@ -1300,7 +1299,8 @@ class GlueEncryptionEnabled(MultiAttrFilter):
     def validate(self):
         attrs = set()
         for key in self.data:
-            if key.startswith('CatalogEncryptionMode') or key.startswith('ReturnConnectionPasswordEncrypted'):
+            if (key.startswith('CatalogEncryptionMode') or
+                    key.startswith('ReturnConnectionPasswordEncrypted')):
                 attrs.add(key)
         self.multi_attrs = attrs
         return super(GlueEncryptionEnabled, self).validate()
@@ -1314,7 +1314,7 @@ class GlueEncryptionEnabled(MultiAttrFilter):
             'DataCatalogEncryptionSettings')
 
         resource[self.annotation] = {
-            'CatalogEncryptionMode': encryption_setting['EncryptionAtRest'], 
+            'CatalogEncryptionMode': encryption_setting['EncryptionAtRest'],
             'ReturnConnectionPasswordEncrypted': encryption_setting['ConnectionPasswordEncryption']}
 
         return resource[self.annotation]
