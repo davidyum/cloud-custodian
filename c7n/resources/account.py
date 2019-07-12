@@ -1287,13 +1287,12 @@ class GlueEncryptionEnabled(MultiAttrFilter):
 
     schema = {
         'type': 'object',
+        'additionalProperties': False,
         'properties': {
             'type': {'enum': ['glue-security-config']},
-            'match-operator': {'enum': ['or', 'and']},
-            'EncryptionAtRest': {'type': 'string'},
-            'ConnectionPasswordEncryption': {'type': 'boolean'}
-        }
-    }
+            'CatalogEncryptionMode': {'type': 'string'},
+            'ReturnConnectionPasswordEncrypted': {'type': 'boolean'}}}
+    
 
     annotation = "c7n:glue-security-config"
     permissions = ('glue:GetDataCatalogEncryptionSettings',)
@@ -1301,7 +1300,7 @@ class GlueEncryptionEnabled(MultiAttrFilter):
     def validate(self):
         attrs = set()
         for key in self.data:
-            if key.startswith('EncryptionAtRest') or key.startswith('ConnectionPasswordEncryption'):
+            if key.startswith('CatalogEncryptionMode') or key.startswith('ReturnConnectionPasswordEncrypted'):
                 attrs.add(key)
         self.multi_attrs = attrs
         return super(GlueEncryptionEnabled, self).validate()
@@ -1314,6 +1313,8 @@ class GlueEncryptionEnabled(MultiAttrFilter):
         encryption_setting = client.get_data_catalog_encryption_settings().get(
             'DataCatalogEncryptionSettings')
 
-        resource[self.annotation] = encryption_setting
+        resource[self.annotation] = {
+            'CatalogEncryptionMode': encryption_setting['EncryptionAtRest'], 
+            'ReturnConnectionPasswordEncrypted': encryption_setting['ConnectionPasswordEncryption']}
 
         return resource[self.annotation]

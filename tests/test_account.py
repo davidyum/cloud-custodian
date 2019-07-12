@@ -761,11 +761,9 @@ class AccountTests(BaseTest):
                 "resource": "account",
                 'filters': [{
                     'type': 'glue-security-config',
-                    'EncryptionAtRest.CatalogEncryptionMode': 'SSE-KMS'},
-                    {
-                    'type': 'glue-security-config',
-                    'ConnectionPasswordEncryption.ReturnConnectionPasswordEncrypted': False
-                }]},
+                    'CatalogEncryptionMode': 'SSE-KMS'},
+                ]
+            },
             session_factory=session_factory,
         )
 
