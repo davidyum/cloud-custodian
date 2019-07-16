@@ -24,7 +24,7 @@ from jsonschema.exceptions import ValidationError
 import datetime
 from dateutil import parser
 import json
-from unittest import mock
+import mock
 import time
 
 from .test_offhours import mock_datetime_now
