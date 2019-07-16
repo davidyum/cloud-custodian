@@ -24,7 +24,7 @@ from jsonschema.exceptions import ValidationError
 import datetime
 from dateutil import parser
 import json
-import mock
+from unittest import mock
 import time
 
 from .test_offhours import mock_datetime_now
@@ -753,7 +753,7 @@ class AccountTests(BaseTest):
         )
         self.assertEqual(len(p.run()), 1)
 
-    def test_glue_encryption_filter(self):
+    def test_glue_catalog_encrypted_filter(self):
         session_factory = self.replay_flight_data("test_account_glue_encyption_filter")
         p = self.load_policy(
             {
@@ -762,6 +762,24 @@ class AccountTests(BaseTest):
                 'filters': [{
                     'type': 'glue-security-config',
                     'CatalogEncryptionMode': 'SSE-KMS'},
+                ]
+            },
+            session_factory=session_factory,
+        )
+
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+
+    def test_glue_password_encrypted_filter(self):
+        session_factory = self.replay_flight_data("test_account_glue_encyption_filter")
+        p = self.load_policy(
+            {
+                "name": "glue-security-config",
+                "resource": "account",
+                'filters': [{
+                    'type': 'glue-security-config',
+                    'ReturnConnectionPasswordEncrypted': False},
                 ]
             },
             session_factory=session_factory,

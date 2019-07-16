@@ -1312,9 +1312,7 @@ class GlueEncryptionEnabled(MultiAttrFilter):
         client = local_session(self.manager.session_factory).client('glue')
         encryption_setting = client.get_data_catalog_encryption_settings().get(
             'DataCatalogEncryptionSettings')
-
-        resource[self.annotation] = {
-            'CatalogEncryptionMode': encryption_setting['EncryptionAtRest'],
-            'ReturnConnectionPasswordEncrypted': encryption_setting['ConnectionPasswordEncryption']}
+        resource[self.annotation] = encryption_setting.get('EncryptionAtRest')
+        resource[self.annotation].update(encryption_setting.get('ConnectionPasswordEncryption'))
 
         return resource[self.annotation]
