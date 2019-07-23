@@ -30,7 +30,6 @@ from c7n.filters import Filter, FilterRegistry, ValueFilter
 from c7n.filters.kms import KmsRelatedFilter
 from c7n.filters.multiattr import MultiAttrFilter
 from c7n.filters.missing import Missing
-from c7n.query import QueryResourceManager
 from c7n.manager import ResourceManager, resources
 from c7n.utils import local_session, type_schema, generate_arn
 from c7n.query import QueryResourceManager
