@@ -771,7 +771,7 @@ class AccountTests(BaseTest):
 
         self.assertEqual(len(resources), 1)
 
-    def test_glue_password_encrypted_filter(self):
+    def test_glue_password_encryption_setting(self):
         session_factory = self.replay_flight_data("test_account_glue_encyption_filter")
         p = self.load_policy(
             {
@@ -779,7 +779,25 @@ class AccountTests(BaseTest):
                 "resource": "account",
                 'filters': [{
                     'type': 'glue-security-config',
-                    'ReturnConnectionPasswordEncrypted': False},
+                    'SseAwsKmsKeyId': 'alias/aws/glue'},
+                ]
+            },
+            session_factory=session_factory,
+        )
+
+        resources = p.run()
+
+        self.assertEqual(len(resources), 1)
+
+    def test_glue_connection_password_encryption(self):
+        session_factory = self.replay_flight_data("test_account_glue_connection_password_filter")
+        p = self.load_policy(
+            {
+                "name": "glue-security-config",
+                "resource": "account",
+                'filters': [{
+                    'type': 'glue-security-config',
+                    'AwsKmsKeyId': 'alias/skunk/trails'},
                 ]
             },
             session_factory=session_factory,
