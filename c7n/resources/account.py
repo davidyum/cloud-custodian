@@ -1390,7 +1390,21 @@ class SetS3PublicBlock(BaseAction):
 
 @filters.register('glue-security-config')
 class GlueEncryptionEnabled(MultiAttrFilter):
-    """Check if security configuration is enabled on the aws account. """
+    """Filter aws account by its glue encryption status and KMS key """
+
+    """:example:
+
+    .. yaml:
+
+      policies:
+        - name: glue-security-config
+          resource: aws.account
+          filters:
+            - type: glue-security-config
+                key: SseAwsKmsKeyId
+                value: alias/aws/glue
+
+    """
     retry = staticmethod(QueryResourceManager.retry)
 
     schema = {
