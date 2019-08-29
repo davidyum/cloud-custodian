@@ -1412,12 +1412,10 @@ class GlueEncryptionEnabled(MultiAttrFilter):
         'additionalProperties': False,
         'properties': {
             'type': {'enum': ['glue-security-config']},
-            'EncryptionAtRest': {
-                'CatalogEncryptionMode': {'type': 'string'},
-                'SseAwsKmsKeyId': {'type': 'string'},
-                'ReturnConnectionPasswordEncrypted': {'type': 'boolean'},
-                'AwsKmsKeyId': {'type': 'string'}
-            }
+            'CatalogEncryptionMode': {'type': 'string'},
+            'SseAwsKmsKeyId': {'type': 'string'},
+            'ReturnConnectionPasswordEncrypted': {'type': 'boolean'},
+            'AwsKmsKeyId': {'type': 'string'}
         }
     }
 
