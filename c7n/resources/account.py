@@ -1412,10 +1412,14 @@ class GlueEncryptionEnabled(MultiAttrFilter):
         'additionalProperties': False,
         'properties': {
             'type': {'enum': ['glue-security-config']},
-            'CatalogEncryptionMode': {'type': 'string'},
-            'SseAwsKmsKeyId': {'type': 'string'},
-            'ReturnConnectionPasswordEncrypted': {'type': 'boolean'},
-            'AwsKmsKeyId': {'type': 'string'}}}
+            'EncryptionAtRest': {
+                'CatalogEncryptionMode': {'type': 'string'},
+                'SseAwsKmsKeyId': {'type': 'string'},
+                'ReturnConnectionPasswordEncrypted': {'type': 'boolean'},
+                'AwsKmsKeyId': {'type': 'string'}
+            }
+        }
+    }
 
     annotation = "c7n:glue-security-config"
     permissions = ('glue:GetDataCatalogEncryptionSettings',)
@@ -1440,14 +1444,15 @@ class GlueEncryptionEnabled(MultiAttrFilter):
         resource[self.annotation] = encryption_setting.get('EncryptionAtRest')
         resource[self.annotation].update(encryption_setting.get('ConnectionPasswordEncryption'))
 
-        for x in self.data:
-            if 'alias' in self.data[x]:
-                key = resource[self.annotation].get(x)
-                vfd = {'c7n:AliasName': self.data[x]}
-                vf = KmsRelatedFilter(vfd, self.manager)
-                vf.RelatedIdsExpression = 'KmsKeyId'
-                vf.annotate = False
-                if not vf.process([{'KmsKeyId': key}]):
-                    return []
-                resource[self.annotation][x] = self.data[x]
+        for kmskey in self.data:
+            if not self.data[kmskey].startswith('alias'):
+                continue
+            key = resource[self.annotation].get(kmskey)
+            vfd = {'c7n:AliasName': self.data[kmskey]}
+            vf = KmsRelatedFilter(vfd, self.manager)
+            vf.RelatedIdsExpression = 'KmsKeyId'
+            vf.annotate = False
+            if not vf.process([{'KmsKeyId': key}]):
+                return []
+            resource[self.annotation][kmskey] = self.data[kmskey]
         return resource[self.annotation]
