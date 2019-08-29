@@ -16,6 +16,7 @@ import email.utils as eut
 import json
 import os
 import re
+from distutils.util import strtobool
 from functools import wraps
 
 import msrest.polling
@@ -75,6 +76,35 @@ ACTIVITY_LOG_RESPONSE = {
     ]
 }
 
+SERVICE_TAG_RESPONSE = {
+    "values": [
+        {
+            "name": "ApiManagement",
+            "id": "ApiManagement",
+            "properties": {
+                "addressPrefixes": [
+                    "13.69.64.76/31",
+                    "13.69.66.144/28",
+                    "23.101.67.140/32",
+                    "51.145.179.78/32",
+                    "137.117.160.56/32"
+                ]
+            }
+        },
+        {
+            "name": "ApiManagement.WestUS",
+            "id": "ApiManagement.WestUS",
+            "properties": {
+                "addressPrefixes": [
+                    "13.64.39.16/32",
+                    "40.112.242.148/31",
+                    "40.112.243.240/28"
+                ]
+            }
+        }
+    ]
+}
+
 
 class AzureVCRBaseTest(VCRTestCase):
 
@@ -116,11 +146,16 @@ class AzureVCRBaseTest(VCRTestCase):
                         'expires',
                         'content-location']
 
+    def __init__(self, *args, **kwargs):
+        super(AzureVCRBaseTest, self).__init__(*args, **kwargs)
+        self.vcr_enabled = not strtobool(os.environ.get('C7N_FUNCTIONAL', 'no'))
+
     def is_playback(self):
         # You can't do this in setup because it is actually required by the base class
         # setup (via our callbacks), but it is also not possible to do until the base class setup
         # has completed initializing the cassette instance.
-        return not hasattr(self, 'cassette') or os.path.isfile(self.cassette._path)
+        cassette_exists = not hasattr(self, 'cassette') or os.path.isfile(self.cassette._path)
+        return self.vcr_enabled and cassette_exists
 
     def _get_cassette_name(self):
         test_method = getattr(self, self._testMethodName)
@@ -222,6 +257,11 @@ class AzureVCRBaseTest(VCRTestCase):
         data = response['body']['data']
 
         if isinstance(data, dict):
+            # Replace service tag responses
+            if data.get('type', '') == 'Microsoft.Network/serviceTags':
+                response['body']['data'] = SERVICE_TAG_RESPONSE
+                return response
+
             # Replace AD graph responses
             odata_metadata = data.get('odata.metadata')
             if odata_metadata and "directoryObjects" in odata_metadata:
@@ -344,14 +384,17 @@ class BaseTest(TestUtils, AzureVCRBaseTest):
             self.addCleanup(self._subscription_patch.stop)
 
     def get_test_date(self, tz=None):
-        header_date = self.cassette.responses[0]['headers'].get('date') \
-            if self.cassette.responses else None
+        if self.vcr_enabled:
+            header_date = self.cassette.responses[0]['headers'].get('date') \
+                if self.cassette.responses else None
 
-        if header_date:
-            test_date = datetime.datetime(*eut.parsedate(header_date[0])[:6])
+            if header_date:
+                test_date = datetime.datetime(*eut.parsedate(header_date[0])[:6])
+            else:
+                test_date = datetime.datetime.now()
+            return test_date.replace(hour=23, minute=59, second=59, microsecond=0)
         else:
-            test_date = datetime.datetime.now()
-        return test_date.replace(hour=23, minute=59, second=59, microsecond=0)
+            return datetime.datetime.now()
 
     @staticmethod
     def setup_account():

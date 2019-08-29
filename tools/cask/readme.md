@@ -1,5 +1,5 @@
-custodian-cask
-===================
+cask: easy custodian exec via docker
+====================================
 
 custodian-cask is a Go wrapper over the `cloudcustodian/c7n:latest`
 Docker image.  It allows you to use the docker image with the same CLI you
@@ -17,28 +17,28 @@ Linux
 sudo sh -c 'wget -q https://cloudcustodian.io/downloads/custodian-cask/linux-latest/custodian-cask -P /usr/local/bin && chmod +x /usr/local/bin/custodian-cask'
 ```
 
-Darwin
+MacOS (Darwin)
 
 ```shell
-sudo sh -c 'wget -q https://cloudcustodian.io/downloads/custodian-cask/darwin-latest/custodian-cask -P /usr/local/bin && chmod +x /usr/local/bin/custodian-cask'
+sudo sh -c '(cd /usr/local/bin && curl -fsSLO https://cloudcustodian.io/downloads/custodian-cask/darwin-latest/custodian-cask && chmod +x /usr/local/bin/custodian-cask)'
 ```
 
 Windows (cmd.exe)
 
-```cmd
+```shell
 @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/cloud-custodian/cloud-custodian/master/tools/cask/scripts/install.ps1'))" && SET "PATH=%PATH%;%LOCALAPPDATA%\custodian\"
 ```
 
 Windows (powershell.exe)
 
-```powershell
+```shell
 Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/cloud-custodian/cloud-custodian/master/tools/cask/scripts/install.ps1'))
 ```
 
 
 Run
 ---
-```
+```shell
 custodian-cask run -s . policy.yml
 ```
 
@@ -51,7 +51,15 @@ You can delete $(tmp)\custodian-cask* if you'd like to force an update.
 Build
 -----
 
-```
+```shell
 cd cloud-custodian\tools\custodian-cask
 go build -o custodian-cask
+```
+
+Alternatively 
+
+```
+make darwin
+make linux
+make windows
 ```

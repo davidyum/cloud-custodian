@@ -32,7 +32,6 @@ from botocore.exceptions import ClientError
 
 
 from c7n.actions import BaseAction
-from c7n.actions.securityhub import OtherResourcePostFinding
 from c7n.exceptions import PolicyValidationError
 from c7n.filters import ValueFilter, Filter
 from c7n.filters.multiattr import MultiAttrFilter
@@ -44,6 +43,7 @@ from c7n.tags import TagActionFilter, TagDelayedAction, Tag, RemoveTag
 from c7n.utils import local_session, type_schema, chunks, filter_empty, QueryParser
 
 from c7n.resources.aws import Arn
+from c7n.resources.securityhub import OtherResourcePostFinding
 
 
 @resources.register('iam-group')
@@ -360,10 +360,13 @@ class ServiceUsage(Filter):
 
         job_resource_map = {}
         for arn, r in zip(self.manager.get_arns(resources), resources):
-            jid = self.manager.retry(
-                client.generate_service_last_accessed_details,
-                Arn=arn)['JobId']
-            job_resource_map[jid] = r
+            try:
+                jid = self.manager.retry(
+                    client.generate_service_last_accessed_details,
+                    Arn=arn)['JobId']
+                job_resource_map[jid] = r
+            except client.exceptions.NoSuchEntityException:
+                continue
 
         conf = dict(self.data)
         conf.pop('match-operator')
@@ -780,7 +783,7 @@ class SetPolicy(BaseAction):
           actions:
             - type: set-policy
               state: detached
-              arn: *
+              arn: "*"
             - type: set-policy
               state: attached
               arn: arn:aws:iam::123456789012:policy/my-iam-policy
@@ -846,12 +849,10 @@ class RoleDelete(BaseAction):
               LastAuthenticated: null
           actions:
             - type: delete
-              force: True
+              force: true
 
     """
-    schema = type_schema('delete',
-        force={'type': 'boolean', 'default': False})
-
+    schema = type_schema('delete', force={'type': 'boolean'})
     permissions = ('iam:DeleteRole',)
 
     def process(self, resources):

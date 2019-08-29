@@ -20,7 +20,21 @@ from c7n.filters.core import Filter, type_schema
 
 @resources.register('armresource')
 class GenericArmResource(ArmResourceManager):
+    """Azure Arm Resource
 
+    :example:
+
+    This policy will find all ARM resources with the tag 'Tag1' present
+
+    .. code-block:: yaml
+
+        policies
+          - name: find-resources-with-Tag1
+            resource: azure.armresource
+            filters:
+              - tag:Tag1: present
+
+    """
     class resource_type(ArmResourceManager.resource_type):
         doc_groups = ['Generic']
 
@@ -29,6 +43,13 @@ class GenericArmResource(ArmResourceManager):
         enum_spec = ('resources', 'list', None)
         resource_type = 'armresource'
         enable_tag_operations = True
+
+        default_report_fields = (
+            'name',
+            'type',
+            'location',
+            'resourceGroup'
+        )
 
     def tag_operation_enabled(self, resource_type):
         if resource_type.lower() in arm_resource_types:
