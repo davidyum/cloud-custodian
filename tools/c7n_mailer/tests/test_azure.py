@@ -25,7 +25,7 @@ from common import (
     MAILER_CONFIG_AZURE, ASQ_MESSAGE, ASQ_MESSAGE_TAG,
     ASQ_MESSAGE_SLACK, ASQ_MESSAGE_DATADOG, logger
 )
-from mock import MagicMock, patch, call, ANY
+from mock import MagicMock, patch, call, ANY, Mock
 
 
 class AzureTest(unittest.TestCase):
@@ -87,7 +87,7 @@ class AzureTest(unittest.TestCase):
 
     @patch('sendgrid.SendGridAPIClient.send')
     def test_sendgrid_handler(self, mock_send):
-        sendgrid_delivery = SendGridDelivery(MAILER_CONFIG_AZURE, logger)
+        sendgrid_delivery = SendGridDelivery(MAILER_CONFIG_AZURE, Mock(), logger)
         sendgrid_messages = \
             sendgrid_delivery.get_to_addrs_sendgrid_messages_map(self.loaded_message)
         result = sendgrid_delivery.sendgrid_handler(self.loaded_message, sendgrid_messages)
@@ -96,18 +96,19 @@ class AzureTest(unittest.TestCase):
 
     @patch('c7n_mailer.azure_mailer.deploy.FunctionPackage')
     def test_build_function_package(self, package_mock):
-        deploy.build_function_package(MAILER_CONFIG_AZURE, "test_mailer")
+        deploy.build_function_package(MAILER_CONFIG_AZURE, "test_mailer", 'sub')
 
         package_mock.assert_called_with(
             "test_mailer",
             ANY,
+            target_sub_ids=['sub'],
             cache_override_path=deploy.cache_path())
 
         package_mock.return_value.pkg.add_contents.assert_any_call(
-            "test_mailer/config.json", contents=ANY)
+            "test_mailer_sub/config.json", contents=ANY)
 
         package_mock.return_value.pkg.add_contents.assert_any_call(
-            "test_mailer/function.json", contents=ANY)
+            "test_mailer_sub/function.json", contents=ANY)
 
     @patch('c7n_mailer.azure_mailer.azure_queue_processor.SmtpDelivery')
     def test_smtp_delivery(self, mock_smtp):

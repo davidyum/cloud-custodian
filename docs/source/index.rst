@@ -60,7 +60,6 @@ Navigate below to your cloud provider and get started with Cloud Custodian!
    azure/gettingstarted
    azure/configuration/index
    azure/examples/index
-   azure/policy/index
    azure/advanced/index
    azure/resources/index
 
@@ -81,9 +80,15 @@ Navigate below to your cloud provider and get started with Cloud Custodian!
    :caption: Tools
 
    tools/c7n-org
-   tools/c7n-policystream
-   tools/c7n-mailer
+   tools/cask
+   tools/c7n-mailer   
+   tools/c7n-logexporter
    tools/c7n-trailcreator
+   tools/c7n-policystream   
+   tools/omnissm
+   tools/c7n-guardian
+   tools/c7n-salactus
+
 
 .. toctree::
    :maxdepth: 2

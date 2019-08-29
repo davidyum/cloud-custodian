@@ -19,7 +19,6 @@ import zlib
 import jmespath
 
 from c7n.actions import BaseAction, ModifyVpcSecurityGroupsAction
-from c7n.actions.securityhub import OtherResourcePostFinding
 from c7n.exceptions import PolicyValidationError, ClientError
 from c7n.filters import (
     DefaultVpcBase, Filter, ValueFilter)
@@ -29,6 +28,7 @@ from c7n.filters.related import RelatedResourceFilter
 from c7n.filters.revisions import Diff
 from c7n import query, resolver
 from c7n.manager import resources
+from c7n.resources.securityhub import OtherResourcePostFinding
 from c7n.utils import (
     chunks, local_session, type_schema, get_retry, parse_cidr)
 
@@ -1139,10 +1139,17 @@ class SGPermission(Filter):
 
 
 SGPermissionSchema = {
-    'IpProtocol': {'enum': [-1, 'tcp', 'udp', 'icmp', 'icmpv6']},
+    'match-operator': {'type': 'string', 'enum': ['or', 'and']},
+    'Ports': {'type': 'array', 'items': {'type': 'integer'}},
+    'SelfReference': {'type': 'boolean'},
     'OnlyPorts': {'type': 'array', 'items': {'type': 'integer'}},
-    'FromPort': {'type': 'integer'},
-    'ToPort': {'type': 'integer'},
+    'IpProtocol': {'enum': ["-1", -1, 'tcp', 'udp', 'icmp', 'icmpv6']},
+    'FromPort': {'oneOf': [
+        {'$ref': '#/definitions/filters/value'},
+        {'type': 'integer'}]},
+    'ToPort': {'oneOf': [
+        {'$ref': '#/definitions/filters/value'},
+        {'type': 'integer'}]},
     'UserIdGroupPairs': {},
     'IpRanges': {},
     'PrefixListIds': {},
@@ -1159,12 +1166,7 @@ class IPPermission(SGPermission):
     schema = {
         'type': 'object',
         'additionalProperties': False,
-        'properties': {
-            'type': {'enum': ['ingress']},
-            'match-operator': {'type': 'string', 'enum': ['or', 'and']},
-            'Ports': {'type': 'array', 'items': {'type': 'integer'}},
-            'SelfReference': {'type': 'boolean'}
-        },
+        'properties': {'type': {'enum': ['ingress']}},
         'required': ['type']}
     schema['properties'].update(SGPermissionSchema)
 
@@ -1176,11 +1178,7 @@ class IPPermissionEgress(SGPermission):
     schema = {
         'type': 'object',
         'additionalProperties': False,
-        'properties': {
-            'type': {'enum': ['egress']},
-            'match-operator': {'type': 'string', 'enum': ['or', 'and']},
-            'SelfReference': {'type': 'boolean'}
-        },
+        'properties': {'type': {'enum': ['egress']}},
         'required': ['type']}
     schema['properties'].update(SGPermissionSchema)
 
@@ -1354,7 +1352,7 @@ class InterfaceSecurityGroupFilter(net_filters.SecurityGroupFilter):
 @NetworkInterface.filter_registry.register('vpc')
 class InterfaceVpcFilter(net_filters.VpcFilter):
 
-    RelatedIdsExpress = "VpcId"
+    RelatedIdsExpression = "VpcId"
 
 
 @NetworkInterface.action_registry.register('modify-security-groups')
