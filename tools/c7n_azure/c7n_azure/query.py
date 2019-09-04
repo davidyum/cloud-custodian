@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import logging
+from collections import Iterable
 
 import six
 from c7n_azure import constants
@@ -42,10 +43,24 @@ class ResourceQuery(object):
         if extra_args:
             params.update(extra_args)
 
-        op = getattr(getattr(resource_manager.get_client(), enum_op), list_op)
-        data = [r.serialize(True) for r in op(**params)]
+        params.update(m.extra_args(resource_manager))
 
-        return data
+        try:
+            op = getattr(getattr(resource_manager.get_client(), enum_op), list_op)
+            result = op(**params)
+
+            if isinstance(result, Iterable):
+                return [r.serialize(True) for r in result]
+            elif hasattr(result, 'value'):
+                return [r.serialize(True) for r in result.value]
+        except Exception as e:
+            log.error("Failed to query resource.\n"
+                      "Type: azure.{0}.\n"
+                      "Error: {1}".format(resource_manager.type, e))
+            six.raise_from(Exception('Failed to query resources.'), e)
+
+        raise TypeError("Enumerating resources resulted in a return"
+                        "value which could not be iterated.")
 
     @staticmethod
     def resolve(resource_type):
@@ -114,7 +129,6 @@ class ChildResourceQuery(ResourceQuery):
 
 @sources.register('describe-child-azure')
 class ChildDescribeSource(DescribeSource):
-
     resource_query_factory = ChildResourceQuery
 
     def __init__(self, manager):
@@ -147,6 +161,10 @@ class TypeInfo(object):
 
     resource = constants.RESOURCE_ACTIVE_DIRECTORY
 
+    @classmethod
+    def extra_args(cls, resource_manager):
+        return {}
+
 
 @six.add_metaclass(TypeMeta)
 class ChildTypeInfo(TypeInfo):
@@ -163,6 +181,7 @@ class ChildTypeInfo(TypeInfo):
 
 class QueryMeta(type):
     """metaclass to have consistent action/filter registry for new resources."""
+
     def __new__(cls, name, parents, attrs):
         if 'filter_registry' not in attrs:
             attrs['filter_registry'] = FilterRegistry(
@@ -176,7 +195,6 @@ class QueryMeta(type):
 
 @six.add_metaclass(QueryMeta)
 class QueryResourceManager(ResourceManager):
-
     class resource_type(TypeInfo):
         pass
 
@@ -272,7 +290,6 @@ class QueryResourceManager(ResourceManager):
 
 @six.add_metaclass(QueryMeta)
 class ChildResourceManager(QueryResourceManager):
-
     child_source = 'describe-child-azure'
     parent_manager = None
 
@@ -317,7 +334,15 @@ class ChildResourceManager(QueryResourceManager):
         else:
             op = getattr(client, list_op)
 
-        return [r.serialize(True) for r in op(**params)]
+        result = op(**params)
+
+        if isinstance(result, Iterable):
+            return [r.serialize(True) for r in result]
+        elif hasattr(result, 'value'):
+            return [r.serialize(True) for r in result.value]
+
+        raise TypeError("Enumerating resources resulted in a return"
+                        "value which could not be iterated.")
 
     @staticmethod
     def register_child_specific(registry, _):
